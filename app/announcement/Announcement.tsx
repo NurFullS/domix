@@ -19,6 +19,25 @@ const CreateAd = () => {
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [cloudinaryUrls, setCloudinaryUrls] = useState<string[]>([])
 
+  // Дополнительные поля
+  const [landSize, setLandSize] = useState('')
+  const [houseArea, setHouseArea] = useState('')
+  const [rooms, setRooms] = useState('')
+  const [floor, setFloor] = useState('')
+  const [buildingType, setBuildingType] = useState('')
+
+  const [brand, setBrand] = useState('')
+  const [model, setModel] = useState('')
+  const [year, setYear] = useState('')
+  const [mileage, setMileage] = useState('')
+  const [fuel, setFuel] = useState('')
+  const [transmission, setTransmission] = useState('')
+
+  const [condition, setCondition] = useState('')
+  const [warranty, setWarranty] = useState('')
+  const [size, setSize] = useState('')
+  const [gender, setGender] = useState('')
+
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
@@ -64,9 +83,7 @@ const CreateAd = () => {
     }
 
     setImages(combined)
-
     previewUrls.forEach(url => URL.revokeObjectURL(url))
-
     const previews = combined.map((file) => URL.createObjectURL(file))
     setPreviewUrls(previews)
     setError('')
@@ -128,6 +145,21 @@ const CreateAd = () => {
           city,
           phone,
           image_url: urls,
+          landSize,
+          houseArea,
+          rooms,
+          floor,
+          buildingType,
+          brand,
+          model,
+          year,
+          mileage,
+          fuel,
+          transmission,
+          condition,
+          warranty,
+          size,
+          gender,
         },
         {
           headers: {
@@ -149,6 +181,22 @@ const CreateAd = () => {
       setPreviewUrls([])
       setCloudinaryUrls([])
 
+      setLandSize('')
+      setHouseArea('')
+      setRooms('')
+      setFloor('')
+      setBuildingType('')
+      setBrand('')
+      setModel('')
+      setYear('')
+      setMileage('')
+      setFuel('')
+      setTransmission('')
+      setCondition('')
+      setWarranty('')
+      setSize('')
+      setGender('')
+
       if (fileInputRef.current) {
         fileInputRef.current.value = ''
       }
@@ -162,14 +210,89 @@ const CreateAd = () => {
   const removeImage = (index: number) => {
     const newImages = images.filter((_, i) => i !== index)
     setImages(newImages)
-
     URL.revokeObjectURL(previewUrls[index])
-
     const newPreviews = previewUrls.filter((_, i) => i !== index)
     setPreviewUrls(newPreviews)
-
     const newCloudUrls = cloudinaryUrls.filter((_, i) => i !== index)
     setCloudinaryUrls(newCloudUrls)
+  }
+
+  const renderCategoryFields = () => {
+    switch (category) {
+      case 'Недвижимость':
+        return (
+          <>
+            <input type="number" value={landSize} onChange={(e) => setLandSize(e.target.value)} placeholder="Площадь участка (сотки)" className="w-full px-4 py-3 rounded border" />
+            <input type="number" value={houseArea} onChange={(e) => setHouseArea(e.target.value)} placeholder="Площадь дома (м²)" className="w-full px-4 py-3 rounded border" />
+            <input type="number" value={rooms} onChange={(e) => setRooms(e.target.value)} placeholder="Количество комнат" className="w-full px-4 py-3 rounded border" />
+            <input type="number" value={floor} onChange={(e) => setFloor(e.target.value)} placeholder="Этаж (если квартира)" className="w-full px-4 py-3 rounded border" />
+            <select value={buildingType} onChange={(e) => setBuildingType(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Тип жилья</option>
+              <option>Квартира</option>
+              <option>Частный дом</option>
+              <option>Коттедж</option>
+            </select>
+          </>
+        )
+      case 'Транспорт':
+        return (
+          <>
+            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Марка" className="w-full px-4 py-3 rounded border" />
+            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="w-full px-4 py-3 rounded border" />
+            <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Год выпуска" className="w-full px-4 py-3 rounded border" />
+            <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="Пробег (км)" className="w-full px-4 py-3 rounded border" />
+            <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Тип топлива</option>
+              <option>Бензин</option>
+              <option>Дизель</option>
+              <option>Электро</option>
+              <option>Гибрид</option>
+            </select>
+            <select value={transmission} onChange={(e) => setTransmission(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Коробка передач</option>
+              <option>Автомат</option>
+              <option>Механика</option>
+            </select>
+          </>
+        )
+      case 'Электроника':
+        return (
+          <>
+            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Бренд" className="w-full px-4 py-3 rounded border" />
+            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="w-full px-4 py-3 rounded border" />
+            <select value={condition} onChange={(e) => setCondition(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Состояние</option>
+              <option>Новый</option>
+              <option>Б/у</option>
+            </select>
+            <select value={warranty} onChange={(e) => setWarranty(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Гарантия</option>
+              <option>Есть</option>
+              <option>Нет</option>
+            </select>
+          </>
+        )
+      case 'Одежда':
+        return (
+          <>
+            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Бренд" className="w-full px-4 py-3 rounded border" />
+            <input type="text" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Размер" className="w-full px-4 py-3 rounded border" />
+            <select value={condition} onChange={(e) => setCondition(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Состояние</option>
+              <option>Новая</option>
+              <option>Б/у</option>
+            </select>
+            <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <option value="">Пол</option>
+              <option>Мужская</option>
+              <option>Женская</option>
+              <option>Муж/Жен</option>
+            </select>
+          </>
+        )
+      default:
+        return null
+    }
   }
 
   return (
@@ -180,70 +303,35 @@ const CreateAd = () => {
           <div className="col-span-7 bg-white rounded-xl shadow-lg p-10">
             <h1 className="text-3xl font-bold mb-8">Создать объявление</h1>
 
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleImageChange}
-              className="w-full mb-4"
-            />
+            <input ref={fileInputRef} type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full mb-4" />
 
             {previewUrls.length > 0 && (
               <div className="overflow-x-auto flex gap-4 mb-4">
                 {previewUrls.map((url, index) => (
                   <div key={index} className="relative">
-                    <img
-                      src={url}
-                      alt={`preview-${index}`}
-                      className="h-32 w-32 object-cover rounded border"
-                    />
-                    <button
-                      onClick={() => removeImage(index)}
-                      className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-5 h-5 text-center leading-3 cursor-pointer"
-                      type="button"
-                      aria-label="Удалить изображение"
-                    >
-                      ×
-                    </button>
+                    <img src={url} alt={`preview-${index}`} className="h-32 w-32 object-cover rounded border" />
+                    <button onClick={() => removeImage(index)} className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-5 h-5 text-center leading-3 cursor-pointer" type="button" aria-label="Удалить изображение">×</button>
                   </div>
                 ))}
               </div>
             )}
 
             <div className="space-y-6">
-              <textarea
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Описание"
-                className="w-full px-4 py-3 rounded border h-[300px] resize-none"
-              />
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className="w-full px-4 py-3 rounded border h-[300px] resize-none" />
 
-              <input
-                type="number"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder="Цена"
-                className="w-full px-4 py-3 rounded border"
-              />
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Цена" className="w-full px-4 py-3 rounded border" />
 
-              <select
-                value={category}
-                onChange={(e) => setCategory(e.target.value)}
-                className="w-full px-4 py-3 rounded border"
-              >
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3 rounded border">
                 <option>Недвижимость</option>
                 <option>Транспорт</option>
                 <option>Электроника</option>
-                <option>Услуги</option>
                 <option>Одежда</option>
+                <option>Услуги</option>
               </select>
 
-              <select
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full px-4 py-3 rounded border"
-              >
+              {renderCategoryFields()}
+
+              <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-4 py-3 rounded border">
                 <option>Город</option>
                 <option>Чуй</option>
                 <option>Талас</option>
@@ -258,22 +346,10 @@ const CreateAd = () => {
               <p className="text-[16px]">Контактный номер: {phone || null}</p>
             </div>
 
-            {message && (
-              <div className="mt-6 p-4 bg-green-100 text-green-700 rounded">{message}</div>
-            )}
+            {message && <div className="mt-6 p-4 bg-green-100 text-green-700 rounded">{message}</div>}
+            {error && <div className="mt-6 p-4 bg-red-100 text-red-700 rounded">{error}</div>}
 
-            {error && (
-              <div className="mt-6 p-4 bg-red-100 text-red-700 rounded">{error}</div>
-            )}
-
-            <button
-              onClick={handleSubmit}
-              disabled={!isFormValid || uploading}
-              className={`mt-8 w-full py-4 rounded font-semibold text-white transition ${isFormValid && !uploading
-                ? 'bg-blue-600 hover:bg-blue-700'
-                : 'bg-blue-300 cursor-not-allowed'
-                }`}
-            >
+            <button onClick={handleSubmit} disabled={!isFormValid || uploading} className={`mt-8 w-full py-4 rounded font-semibold text-white transition ${isFormValid && !uploading ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'}`}>
               {uploading ? 'Загрузка изображений...' : 'Опубликовать'}
             </button>
           </div>
@@ -283,9 +359,7 @@ const CreateAd = () => {
             <p className="text-gray-700 mb-2">• Добавляйте качественные фото для привлечения покупателей.</p>
             <p className="text-gray-700 mb-2">• Указывайте реальные цены, чтобы избежать лишних вопросов.</p>
             <p className="text-gray-700 mb-2">• Заполняйте все поля — это повысит доверие к объявлению.</p>
-            <p className="text-gray-700">
-              • Обязательно оставляйте контактный номер, по которому с вами смогут связаться.
-            </p>
+            <p className="text-gray-700">• Обязательно оставляйте контактный номер, по которому с вами смогут связаться.</p>
           </div>
         </div>
       </div>
