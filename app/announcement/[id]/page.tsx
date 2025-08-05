@@ -108,7 +108,7 @@ const AnnouncementPage = () => {
                 <h1 className="text-3xl font-bold mb-6 border-b pb-2">{ad.category || 'Без названия'}</h1>
 
                 <div className="mb-6 flex flex-wrap gap-4 justify-center">
-                    {ad.imageUrls.map((url, i) => (
+                    {ad.imageUrls?.map((url, i) => (
                         <img
                             key={i}
                             src={url}
