@@ -125,7 +125,6 @@ const AnnouncementPage = () => {
                     <p><span className="font-semibold">Телефон:</span> {ad.phone}</p>
                 </div>
 
-                {/* Специфичные данные по категории */}
                 {renderCategoryDetails()}
 
                 <div className="mb-6">

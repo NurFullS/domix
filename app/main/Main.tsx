@@ -15,7 +15,7 @@ type Ad = {
   city: string
   phone: string
   createdAt: string
-  imageUrl: string[]
+  imageUrls: string[]
 }
 
 const Main = () => {
@@ -58,9 +58,9 @@ const Main = () => {
               onClick={() => navAnnProduct(ad.id)}
             >
               <div className="w-[250px] h-52">
-                {ad.imageUrl?.[0] && (
+                {ad.imageUrls?.[0] && (
                   <img
-                    src={ad.imageUrl[0]}
+                    src={ad.imageUrls[0]}
                     alt={ad.title}
                     className="w-[250px] h-full rounded-2xl object-contain bg-gray-100"
                   />
