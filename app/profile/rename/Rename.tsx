@@ -13,13 +13,14 @@ const Rename = () => {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [currentUser, setCurrentUser] = useState<User | null>(null)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchCurrentUser = async () => {
     const token = localStorage.getItem('token')
     if (!token) return
 
     try {
-      const res = await axios.get<User>('https://domix-server.onrender.com/users/profile', {
+      const res = await axios.get<User>(`${apiUrl}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setCurrentUser(res.data)
@@ -38,7 +39,7 @@ const Rename = () => {
       }
 
       const res = await axios.put(
-        'https://domix-server.onrender.com/users/username',
+        `${apiUrl}/users/username`,
         { username },
         {
           headers: {

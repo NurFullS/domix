@@ -9,6 +9,7 @@ const ResPass = () => {
   const [newPassword, setNewPassword] = useState('')
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -21,7 +22,7 @@ const ResPass = () => {
 
     try {
       const response = await axios.put(
-        'https://domix-server.onrender.com/users/reset-password',
+        `${apiUrl}/users/reset-password`,
         { currentPassword, newPassword },
         {
           headers: {

@@ -15,13 +15,14 @@ const Users = () => {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       setError(null)
       try {
-        const res = await axios.get('https://domix-server.onrender.com/users')
+        const res = await axios.get(`${apiUrl}/users`)
         setUsers(res.data)
       } catch (err) {
         setError('Ошибка загрузки пользователей')
@@ -36,7 +37,7 @@ const Users = () => {
 
   const deleteUser = async (id: number) => {
     try {
-      await axios.delete(`https://domix-server.onrender.com/users/${id}`)
+      await axios.delete(`${apiUrl}/users/${id}`)
       setUsers((prev) => prev.filter((user) => user.id !== id))
       localStorage.removeItem('token')
     } catch (err) {

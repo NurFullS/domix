@@ -9,6 +9,7 @@ const Login = () => {
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const validate = () => {
     if (!email.includes('@')) {
@@ -28,7 +29,7 @@ const Login = () => {
     if (!validate()) return
 
     try {
-      const res = await axios.post('https://domix-server.onrender.com/users/login', {
+      const res = await axios.post(`${apiUrl}/users/login`, {
         email,
         password,
       })

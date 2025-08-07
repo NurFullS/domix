@@ -21,10 +21,11 @@ type Ad = {
 const Main = () => {
   const [ads, setAds] = useState<Ad[]>([])
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     axios
-      .get('https://domix-server.onrender.com/ads')
+      .get(`${apiUrl}/ads`)
       .then((res) => setAds(res.data))
       .catch((err) => console.error('Ошибка при получении объявлений:', err))
   }, [])

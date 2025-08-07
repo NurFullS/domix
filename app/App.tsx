@@ -7,6 +7,7 @@ import Main from './main/Main'
 
 const ProtectedPage = () => {
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   useEffect(() => {
     const token = localStorage.getItem('token')
@@ -19,7 +20,7 @@ const ProtectedPage = () => {
     }
 
     axios
-      .get('https://domix-server.onrender.com/users/profile', {
+      .get(`${apiUrl}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then(res => {

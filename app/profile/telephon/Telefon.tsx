@@ -15,13 +15,14 @@ const Telefon = () => {
   const [currentUser, setCurrentUser] = useState<User | null>(null)
   const [isChanged, setIsChanged] = useState(false)
   const [message, setMessage] = useState('');
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const fetchCurrentUser = async () => {
     const token = localStorage.getItem('token')
     if (!token) return
 
     try {
-      const res = await axios.get<User>('https://domix-server.onrender.com/users/profile', {
+      const res = await axios.get<User>(`${apiUrl}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       setCurrentUser(res.data)
@@ -51,7 +52,7 @@ const Telefon = () => {
 
     try {
       await axios.put(
-        'https://domix-server.onrender.com/users/phone',
+        `${apiUrl}/users/phone`,
         { phone },
         {
           headers: { Authorization: `Bearer ${token}` },

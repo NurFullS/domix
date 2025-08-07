@@ -42,12 +42,13 @@ const AnnouncementPage = () => {
     const [ad, setAd] = useState<Ad | null>(null)
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState('')
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     useEffect(() => {
         if (!id) return
 
         axios
-            .get(`https://domix-server.onrender.com/ads/${id}`)
+            .get(`${apiUrl}/ads/${id}`)
             .then((res) => {
                 setAd(res.data)
                 setLoading(false)

@@ -9,6 +9,7 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useRouter();
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const validate = () => {
     if (username.length < 3) return 'Имя должно содержать минимум 3 символа';
@@ -27,7 +28,7 @@ const Register = () => {
 
     try {
       const res = await axios.post(
-        'https://domix-server.onrender.com/users/register',
+        `${apiUrl}/users/register`,
         {
           username,
           email,

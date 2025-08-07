@@ -29,6 +29,7 @@ export default function CreateAd() {
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -75,7 +76,7 @@ export default function CreateAd() {
         formData.append('gender', gender)
       }
 
-      const response = await axios.post('/api/ads', formData)
+      const response = await axios.post(`${apiUrl}/api/ads`, formData)
 
       setMessage('Объявление успешно опубликовано!')
       setError('')

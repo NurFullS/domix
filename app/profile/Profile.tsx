@@ -26,6 +26,7 @@ const Profile = () => {
     const [userBase, setUserBase] = useState<User | null>(null)
     const [logoutPopUp, setLogoutPopUp] = useState(false)
     const navigate = useRouter()
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const fetchProfile = async () => {
         const prodToken = localStorage.getItem('prod-token')
@@ -34,12 +35,12 @@ const Profile = () => {
         try {
             const [prodRes, localRes] = await Promise.allSettled([
                 prodToken
-                    ? axios.get('https://domix-server.onrender.com/users/profile', {
+                    ? axios.get(`${apiUrl}/users/profile`, {
                         headers: { Authorization: `Bearer ${prodToken}` },
                     })
                     : Promise.reject('No prod token'),
                 localToken
-                    ? axios.get('http://localhost:8080/users/profile', {
+                    ? axios.get(`${apiUrl}/users/profile`, {
                         headers: { Authorization: `Bearer ${localToken}` },
                     })
                     : Promise.reject('No local token'),
@@ -74,7 +75,7 @@ const Profile = () => {
         const token = localStorage.getItem('token')
 
         try {
-            await axios.post('https://domix-server.onrender.com/users/upload-avatar', formData, {
+            await axios.post(`${apiUrl}/users/upload-avatar`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                     'Content-Type': 'multipart/form-data',
