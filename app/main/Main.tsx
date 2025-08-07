@@ -62,7 +62,7 @@ const Main = () => {
                   <img
                     src={ad.imageUrls[0]}
                     alt={ad.title}
-                    className="w-[350px] h-full rounded-2xl bg-gray-100 "
+                    className="w-full h-full rounded-2xl bg-gray-100 "
                   />
                 )}
               </div>

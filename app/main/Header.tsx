@@ -21,12 +21,13 @@ const Header = ({ onSearchResult }: Props) => {
   const [query, setQuery] = useState('');
   const [user, setUser] = useState<User | null>(null);
   const navigate = useRouter()
+  const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
   const handleSearch = () => {
     if (!query.trim()) return;
 
     axios
-      .get(`https://domix-server.onrender.com/ads/search?keyword=${query}`)
+      .get(`${apiUrl}/ads/search?keyword=${query}`)
       .then((res) => {
         onSearchResult(res.data);
       })
@@ -40,7 +41,7 @@ const Header = ({ onSearchResult }: Props) => {
     if (!token) return;
 
     axios
-      .get('https://domix-server.onrender.com/users/profile', {
+      .get(`${apiUrl}/users/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       })
       .then((res) => {

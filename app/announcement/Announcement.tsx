@@ -1,15 +1,11 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useRef } from 'react'
 import axios from 'axios'
+import { useRouter } from 'next/navigation'
 import TopHeader from '../main/TopHeader'
 
-type UserProfile = {
-  telefonNumber: string | null
-}
-
-const CreateAd = () => {
-  const [title, setTitle] = useState('')
+export default function CreateAd() {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState('')
   const [category, setCategory] = useState('Недвижимость')
@@ -17,14 +13,9 @@ const CreateAd = () => {
   const [phone, setPhone] = useState('')
   const [images, setImages] = useState<File[]>([])
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
-  const [cloudinaryUrls, setCloudinaryUrls] = useState<string[]>([])
-
-  // Дополнительные поля
-  const [landSize, setLandSize] = useState('')
-  const [houseArea, setHouseArea] = useState('')
-  const [rooms, setRooms] = useState('')
-  const [floor, setFloor] = useState('')
-  const [buildingType, setBuildingType] = useState('')
+  const [message, setMessage] = useState('')
+  const [error, setError] = useState('')
+  const [uploading, setUploading] = useState(false)
 
   const [brand, setBrand] = useState('')
   const [model, setModel] = useState('')
@@ -32,160 +23,69 @@ const CreateAd = () => {
   const [mileage, setMileage] = useState('')
   const [fuel, setFuel] = useState('')
   const [transmission, setTransmission] = useState('')
-
   const [condition, setCondition] = useState('')
-  const [warranty, setWarranty] = useState('')
   const [size, setSize] = useState('')
   const [gender, setGender] = useState('')
 
-  const [message, setMessage] = useState('')
-  const [error, setError] = useState('')
-  const [uploading, setUploading] = useState(false)
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  useEffect(() => {
-    const token = localStorage.getItem('token')
-    if (!token) {
-      setError('Пользователь не авторизован')
-      return
-    }
-
-    axios
-      .get<UserProfile>('https://domix-server.onrender.com/users/profile', {
-        headers: { Authorization: `Bearer ${token}` },
-      })
-      .then((res) => {
-        if (res.data.telefonNumber) {
-          setPhone(res.data.telefonNumber)
-        }
-      })
-      .catch(() => {
-        setError('Ошибка при загрузке данных пользователя')
-      })
-  }, [])
-
-  const isFormValid =
-    description.trim() &&
-    price.trim() &&
-    category.trim() &&
-    city.trim()
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter()
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files) return
-
-    const selectedFiles = Array.from(e.target.files)
-    const combined = [...images, ...selectedFiles]
-
-    if (combined.length > 5) {
-      setError('Можно выбрать максимум 5 изображений')
-      return
-    }
-
-    setImages(combined)
-    previewUrls.forEach(url => URL.revokeObjectURL(url))
-    const previews = combined.map((file) => URL.createObjectURL(file))
-    setPreviewUrls(previews)
-    setError('')
+    const files = e.target.files
+    if (!files) return
+    const newFiles = Array.from(files)
+    setImages((prev) => [...prev, ...newFiles])
+    const newUrls = newFiles.map((file) => URL.createObjectURL(file))
+    setPreviewUrls((prev) => [...prev, ...newUrls])
   }
 
-  const uploadImages = async (): Promise<string[]> => {
-    setUploading(true)
-    try {
-      const uploadedUrls: string[] = []
-      for (const image of images) {
-        const formData = new FormData()
-        formData.append('image', image)
-
-        const res = await axios.post('https://domix-server.onrender.com/api/upload', formData, {
-          headers: { 'Content-Type': 'multipart/form-data' },
-        })
-
-        uploadedUrls.push(res.data.image_url)
-      }
-      setCloudinaryUrls(uploadedUrls)
-      return uploadedUrls
-    } catch (error) {
-      setError('Ошибка загрузки изображений')
-      return []
-    } finally {
-      setUploading(false)
-    }
+  const removeImage = (index: number) => {
+    const newImages = [...images]
+    const newUrls = [...previewUrls]
+    newImages.splice(index, 1)
+    newUrls.splice(index, 1)
+    setImages(newImages)
+    setPreviewUrls(newUrls)
   }
+
+  const isFormValid = description && price && category && city && images.length > 0
 
   const handleSubmit = async () => {
-    if (!isFormValid) {
-      setError('Пожалуйста, заполните все обязательные поля.')
-      setMessage('')
-      return
-    }
-
-    const priceNumber = Number(price)
-    if (isNaN(priceNumber) || priceNumber <= 0) {
-      setError('Введите корректную цену больше 0')
-      setMessage('')
-      return
-    }
-
-    let urls = cloudinaryUrls
-    if (images.length > 0 && cloudinaryUrls.length !== images.length) {
-      urls = await uploadImages()
-    }
-
-    const token = localStorage.getItem('token')
-
+    if (!isFormValid) return
+    setUploading(true)
     try {
-      await axios.post(
-        'https://domix-server.onrender.com/ads',
-        {
-          title,
-          description,
-          price: priceNumber,
-          category,
-          city,
-          phone,
-          image_url: urls,
-          landSize,
-          houseArea,
-          rooms,
-          floor,
-          buildingType,
-          brand,
-          model,
-          year,
-          mileage,
-          fuel,
-          transmission,
-          condition,
-          warranty,
-          size,
-          gender,
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      )
+      const formData = new FormData()
+      images.forEach((img) => formData.append('images', img))
+      formData.append('description', description)
+      formData.append('price', price)
+      formData.append('category', category)
+      formData.append('city', city)
+      formData.append('phone', phone)
 
-      previewUrls.forEach(url => URL.revokeObjectURL(url))
+      if (category === 'Транспорт') {
+        formData.append('brand', brand)
+        formData.append('model', model)
+        formData.append('year', year)
+        formData.append('mileage', mileage)
+        formData.append('fuel', fuel)
+        formData.append('transmission', transmission)
+        formData.append('condition', condition)
+      } else if (category === 'Одежда') {
+        formData.append('size', size)
+        formData.append('gender', gender)
+      }
 
-      setMessage('Объявление успешно создано!')
+      const response = await axios.post('/api/ads', formData)
+
+      setMessage('Объявление успешно опубликовано!')
       setError('')
-      setTitle('')
       setDescription('')
       setPrice('')
       setCategory('Недвижимость')
       setCity('Город')
+      setPhone('')
       setImages([])
       setPreviewUrls([])
-      setCloudinaryUrls([])
-
-      setLandSize('')
-      setHouseArea('')
-      setRooms('')
-      setFloor('')
-      setBuildingType('')
       setBrand('')
       setModel('')
       setYear('')
@@ -193,145 +93,82 @@ const CreateAd = () => {
       setFuel('')
       setTransmission('')
       setCondition('')
-      setWarranty('')
       setSize('')
       setGender('')
-
-      if (fileInputRef.current) {
-        fileInputRef.current.value = ''
-      }
-    } catch (error) {
-      setError('Ошибка при создании объявления.')
-      setMessage('')
-      console.error(error)
+    } catch (err) {
+      setError('Произошла ошибка при отправке формы.')
+    } finally {
+      setUploading(false)
     }
-  }
-
-  const removeImage = (index: number) => {
-    const newImages = images.filter((_, i) => i !== index)
-    setImages(newImages)
-    URL.revokeObjectURL(previewUrls[index])
-    const newPreviews = previewUrls.filter((_, i) => i !== index)
-    setPreviewUrls(newPreviews)
-    const newCloudUrls = cloudinaryUrls.filter((_, i) => i !== index)
-    setCloudinaryUrls(newCloudUrls)
   }
 
   const renderCategoryFields = () => {
-    switch (category) {
-      case 'Недвижимость':
-        return (
-          <>
-            <input type="number" value={landSize} onChange={(e) => setLandSize(e.target.value)} placeholder="Площадь участка (сотки)" className="w-full px-4 py-3 rounded border" />
-            <input type="number" value={houseArea} onChange={(e) => setHouseArea(e.target.value)} placeholder="Площадь дома (м²)" className="w-full px-4 py-3 rounded border" />
-            <input type="number" value={rooms} onChange={(e) => setRooms(e.target.value)} placeholder="Количество комнат" className="w-full px-4 py-3 rounded border" />
-            <input type="number" value={floor} onChange={(e) => setFloor(e.target.value)} placeholder="Этаж (если квартира)" className="w-full px-4 py-3 rounded border" />
-            <select value={buildingType} onChange={(e) => setBuildingType(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Тип жилья</option>
-              <option>Квартира</option>
-              <option>Частный дом</option>
-              <option>Коттедж</option>
-            </select>
-          </>
-        )
-      case 'Транспорт':
-        return (
-          <>
-            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Марка" className="w-full px-4 py-3 rounded border" />
-            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="w-full px-4 py-3 rounded border" />
-            <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Год выпуска" className="w-full px-4 py-3 rounded border" />
-            <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="Пробег (км)" className="w-full px-4 py-3 rounded border" />
-            <select value={fuel} onChange={(e) => setFuel(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Тип топлива</option>
-              <option>Бензин</option>
-              <option>Дизель</option>
-              <option>Электро</option>
-              <option>Гибрид</option>
-            </select>
-            <select value={transmission} onChange={(e) => setTransmission(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Коробка передач</option>
-              <option>Автомат</option>
-              <option>Механика</option>
-            </select>
-          </>
-        )
-      case 'Электроника':
-        return (
-          <>
-            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Бренд" className="w-full px-4 py-3 rounded border" />
-            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="w-full px-4 py-3 rounded border" />
-            <select value={condition} onChange={(e) => setCondition(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Состояние</option>
-              <option>Новый</option>
-              <option>Б/у</option>
-            </select>
-            <select value={warranty} onChange={(e) => setWarranty(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Гарантия</option>
-              <option>Есть</option>
-              <option>Нет</option>
-            </select>
-          </>
-        )
-      case 'Одежда':
-        return (
-          <>
-            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Бренд" className="w-full px-4 py-3 rounded border" />
-            <input type="text" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Размер" className="w-full px-4 py-3 rounded border" />
-            <select value={condition} onChange={(e) => setCondition(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Состояние</option>
-              <option>Новая</option>
-              <option>Б/у</option>
-            </select>
-            <select value={gender} onChange={(e) => setGender(e.target.value)} className="w-full px-4 py-3 rounded border">
-              <option value="">Пол</option>
-              <option>Мужская</option>
-              <option>Женская</option>
-              <option>Муж/Жен</option>
-            </select>
-          </>
-        )
-      default:
-        return null
+    if (category === 'Транспорт') {
+      return (
+        <div className="space-y-4">
+          <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Марка" className="input" />
+          <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="input" />
+          <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Год выпуска" className="input" />
+          <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="Пробег" className="input" />
+          <input type="text" value={fuel} onChange={(e) => setFuel(e.target.value)} placeholder="Топливо" className="input" />
+          <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} placeholder="Коробка передач" className="input" />
+          <input type="text" value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="Состояние" className="input" />
+        </div>
+      )
+    } else if (category === 'Одежда') {
+      return (
+        <div className="space-y-4">
+          <input type="text" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Размер" className="input" />
+          <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="Пол (мужской, женский)" className="input" />
+        </div>
+      )
     }
+    return null
   }
 
   return (
     <>
       <TopHeader />
-      <div className="min-h-screen bg-gray-100 py-10 px-16">
-        <div className="max-w-7xl mx-auto grid grid-cols-12 gap-10">
-          <div className="col-span-7 bg-white rounded-xl shadow-lg p-10">
-            <h1 className="text-3xl font-bold mb-8">Создать объявление</h1>
+      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-gray-100 py-12 px-6 md:px-16 w-full">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-10 w-full">
+          <div className="md:col-span-7 bg-white rounded-2xl shadow-2xl p-10 w-full">
+            <h1 className="text-4xl font-extrabold mb-8 text-blue-600">Создать объявление</h1>
 
-            <input ref={fileInputRef} type="file" multiple accept="image/*" onChange={handleImageChange} className="w-full mb-4" />
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*"
+              onChange={handleImageChange}
+              className="w-full mb-6 text-sm text-gray-600 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+            />
 
             {previewUrls.length > 0 && (
-              <div className="overflow-x-auto flex gap-4 mb-4">
+              <div className="overflow-x-auto flex gap-4 mb-6">
                 {previewUrls.map((url, index) => (
-                  <div key={index} className="relative">
-                    <img src={url} alt={`preview-${index}`} className="h-32 w-32 object-cover rounded border" />
-                    <button onClick={() => removeImage(index)} className="absolute top-2 right-2 bg-red-600 text-white rounded-full w-5 h-5 text-center leading-3 cursor-pointer" type="button" aria-label="Удалить изображение">×</button>
+                  <div key={index} className="relative group">
+                    <img src={url} alt={`preview-${index}`} className="h-32 w-32 object-cover rounded-xl border shadow" />
+                    <button
+                      onClick={() => removeImage(index)}
+                      className="absolute top-1 right-1 bg-red-500 text-white rounded-full w-6 h-6 text-xs font-bold hidden group-hover:flex justify-center items-center"
+                    >×</button>
                   </div>
                 ))}
               </div>
             )}
 
-            <div className="space-y-6">
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className="w-full px-4 py-3 rounded border h-[300px] resize-none" />
-
-              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Цена" className="w-full px-4 py-3 rounded border" />
-
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="w-full px-4 py-3 rounded border">
+            <div className="space-y-6 w-full">
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className="input h-48 w-full resize-none p-4 border-2 border-blue-600 rounded-2xl outline-0" />
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Цена" className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0" />
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0">
                 <option>Недвижимость</option>
                 <option>Транспорт</option>
                 <option>Электроника</option>
                 <option>Одежда</option>
                 <option>Услуги</option>
               </select>
-
               {renderCategoryFields()}
-
-              <select value={city} onChange={(e) => setCity(e.target.value)} className="w-full px-4 py-3 rounded border">
+              <select value={city} onChange={(e) => setCity(e.target.value)} className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0">
                 <option>Город</option>
                 <option>Чуй</option>
                 <option>Талас</option>
@@ -342,29 +179,31 @@ const CreateAd = () => {
                 <option>Нарын</option>
                 <option>Бишкек</option>
               </select>
-
-              <p className="text-[16px]">Контактный номер: {phone || null}</p>
+              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Контактный номер" className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0" />
             </div>
 
-            {message && <div className="mt-6 p-4 bg-green-100 text-green-700 rounded">{message}</div>}
-            {error && <div className="mt-6 p-4 bg-red-100 text-red-700 rounded">{error}</div>}
+            {message && <div className="mt-6 p-4 rounded-lg bg-green-100 text-green-800 font-semibold">{message}</div>}
+            {error && <div className="mt-6 p-4 rounded-lg bg-red-100 text-red-700 font-semibold">{error}</div>}
 
-            <button onClick={handleSubmit} disabled={!isFormValid || uploading} className={`mt-8 w-full py-4 rounded font-semibold text-white transition ${isFormValid && !uploading ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'}`}>
-              {uploading ? 'Загрузка изображений...' : 'Опубликовать'}
-            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={!isFormValid || uploading}
+              className={`mt-8 w-full py-4 rounded-lg text-lg font-bold text-white transition duration-300 ${isFormValid && !uploading ? 'bg-blue-600 hover:bg-blue-700' : 'bg-blue-300 cursor-not-allowed'}`}
+            >{uploading ? 'Загрузка изображений...' : 'Опубликовать'}</button>
           </div>
 
-          <div className="col-span-5 bg-white rounded-xl shadow-lg p-8 flex flex-col justify-center">
-            <h2 className="text-2xl font-semibold mb-4">Полезные советы</h2>
-            <p className="text-gray-700 mb-2">• Добавляйте качественные фото для привлечения покупателей.</p>
-            <p className="text-gray-700 mb-2">• Указывайте реальные цены, чтобы избежать лишних вопросов.</p>
-            <p className="text-gray-700 mb-2">• Заполняйте все поля — это повысит доверие к объявлению.</p>
-            <p className="text-gray-700">• Обязательно оставляйте контактный номер, по которому с вами смогут связаться.</p>
+          <div className="md:col-span-5 bg-white rounded-2xl shadow-xl p-8 flex flex-col justify-center">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Полезные советы</h2>
+            <ul className="list-disc pl-5 space-y-2 text-gray-700">
+              <li>Добавляйте качественные фото для привлечения покупателей.</li>
+              <li>Указывайте реальные цены, чтобы избежать лишних вопросов.</li>
+              <li>Заполняйте все поля — это повысит доверие к объявлению.</li>
+              <li>Обязательно оставляйте контактный номер, по которому с вами смогут связаться.</li>
+              <li>Добавьте картинку с размером 250px на 208px.</li>
+            </ul>
           </div>
         </div>
       </div>
     </>
   )
 }
-
-export default CreateAd

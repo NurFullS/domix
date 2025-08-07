@@ -28,17 +28,21 @@ const Profile = () => {
     const navigate = useRouter()
 
     const fetchProfile = async () => {
-        const token = localStorage.getItem('token')
-        if (!token) return
+        const prodToken = localStorage.getItem('prod-token')
+        const localToken = localStorage.getItem('local-token')
 
         try {
             const [prodRes, localRes] = await Promise.allSettled([
-                axios.get('https://domix-server.onrender.com/users/profile', {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
-                axios.get('http://localhost:8080/profile', {
-                    headers: { Authorization: `Bearer ${token}` },
-                }),
+                prodToken
+                    ? axios.get('https://domix-server.onrender.com/users/profile', {
+                        headers: { Authorization: `Bearer ${prodToken}` },
+                    })
+                    : Promise.reject('No prod token'),
+                localToken
+                    ? axios.get('http://localhost:8080/users/profile', {
+                        headers: { Authorization: `Bearer ${localToken}` },
+                    })
+                    : Promise.reject('No local token'),
             ])
 
             const working = prodRes.status === 'fulfilled' ? prodRes : localRes.status === 'fulfilled' ? localRes : null
@@ -46,13 +50,15 @@ const Profile = () => {
             if (working) {
                 setUserBase(working.value.data)
             } else {
-                localStorage.removeItem('token')
+                localStorage.removeItem('prod-token')
+                localStorage.removeItem('local-token')
                 navigate.replace('/register')
             }
         } catch (error) {
             console.error('Ошибка при получении профиля', error)
         }
     }
+
 
     useEffect(() => {
         fetchProfile()
@@ -202,4 +208,4 @@ const SettingItem = ({ icon, label, onClick }: { icon: React.ReactNode; label: s
     </div>
 )
 
-export default Profile
+export default Profile;
