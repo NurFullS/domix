@@ -27,19 +27,31 @@ const Profile = () => {
     const [logoutPopUp, setLogoutPopUp] = useState(false)
     const navigate = useRouter()
 
-    const fetchProfile = () => {
+    const fetchProfile = async () => {
         const token = localStorage.getItem('token')
         if (!token) return
 
-        axios
-            .get('https://domix-server.onrender.com/users/profile', {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then(res => setUserBase(res.data))
-            .catch(() => {
+        try {
+            const [prodRes, localRes] = await Promise.allSettled([
+                axios.get('https://domix-server.onrender.com/users/profile', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+                axios.get('http://localhost:8080/profile', {
+                    headers: { Authorization: `Bearer ${token}` },
+                }),
+            ])
+
+            const working = prodRes.status === 'fulfilled' ? prodRes : localRes.status === 'fulfilled' ? localRes : null
+
+            if (working) {
+                setUserBase(working.value.data)
+            } else {
                 localStorage.removeItem('token')
                 navigate.replace('/register')
-            })
+            }
+        } catch (error) {
+            console.error('Ошибка при получении профиля', error)
+        }
     }
 
     useEffect(() => {
