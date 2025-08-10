@@ -29,37 +29,18 @@ const Profile = () => {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
     const fetchProfile = async () => {
-        const prodToken = localStorage.getItem('prod-token')
-        const localToken = localStorage.getItem('local-token')
+        const token = localStorage.getItem('token');
+        if (!token) return;
 
         try {
-            const [prodRes, localRes] = await Promise.allSettled([
-                prodToken
-                    ? axios.get(`${apiUrl}/users/profile`, {
-                        headers: { Authorization: `Bearer ${prodToken}` },
-                    })
-                    : Promise.reject('No prod token'),
-                localToken
-                    ? axios.get(`${apiUrl}/users/profile`, {
-                        headers: { Authorization: `Bearer ${localToken}` },
-                    })
-                    : Promise.reject('No local token'),
-            ])
-
-            const working = prodRes.status === 'fulfilled' ? prodRes : localRes.status === 'fulfilled' ? localRes : null
-
-            if (working) {
-                setUserBase(working.value.data)
-            } else {
-                localStorage.removeItem('prod-token')
-                localStorage.removeItem('local-token')
-                navigate.replace('/register')
-            }
+            const res = await axios.get(`${apiUrl}/users/profile`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            setUserBase(res.data);
         } catch (error) {
-            console.error('Ошибка при получении профиля', error)
+            console.error('Ошибка при получении профиля', error);
         }
     }
-
 
     useEffect(() => {
         fetchProfile()
@@ -105,18 +86,18 @@ const Profile = () => {
     return (
         <>
             <TopHeader />
-            <div className="min-h-screen bg-gray-100 dark:bg-gray-900 px-4 py-8 flex justify-center">
-                <div className="bg-white dark:bg-gray-800 shadow-md rounded-2xl p-6 w-full h-[430px] max-w-4xl flex flex-col md:flex-row gap-6 transition-colors">
-                    <div className="flex flex-col items-center md:items-start md:w-1/2 space-y-4">
+            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 px-4 py-8 flex justify-center">
+                <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-8 w-full h-[530px] max-w-5xl flex flex-col md:flex-row gap-8 animate-fade-in">
+                    <div className="flex flex-col items-center md:items-start md:w-1/2 space-y-5">
                         <img
-                            className="w-28 h-28 rounded-full border-4 border-blue-500 object-cover"
+                            className="w-32 h-32 rounded-full border-4 border-blue-600 object-cover shadow-lg"
                             src={userBase?.avatarUrl || 'https://cdn-icons-png.flaticon.com/512/219/219983.png'}
                             alt="User avatar"
                         />
-                        <div className="w-full max-w-md flex flex-col gap-2">
+                        <div className="w-full max-w-md flex flex-col gap-3">
                             <label
                                 htmlFor="avatarUpload"
-                                className="block text-gray-700 dark:text-gray-300 font-semibold mb-1 cursor-pointer"
+                                className="block text-gray-800 dark:text-gray-200 font-semibold cursor-pointer"
                             >
                                 Фото профиля:
                             </label>
@@ -124,45 +105,33 @@ const Profile = () => {
                                 id="avatarUpload"
                                 type="file"
                                 accept="image/*"
-                                className="block w-full text-sm text-gray-500
-                                       file:mr-4 file:py-2 file:px-4
-                                       file:rounded-md file:border-0
-                                       file:text-sm file:font-semibold
-                                       file:bg-blue-600 file:text-white
-                                       hover:file:bg-blue-700
-                                       cursor-pointer
-                                       dark:text-gray-200"
+                                className="block w-full text-sm text-gray-700 dark:text-gray-100
+                  file:mr-4 file:py-2 file:px-4
+                  file:rounded-lg file:border-0
+                  file:text-sm file:font-medium
+                  file:bg-blue-600 file:text-white
+                  hover:file:bg-blue-700
+                  transition-all duration-300 ease-in-out
+                  cursor-pointer"
                                 onChange={handleFileChange}
                             />
                         </div>
 
                         {userBase ? (
-                            <div className="text-left space-y-2 text-sm md:text-base text-gray-900 dark:text-gray-100">
-                                <p>
-                                    <span className="font-semibold">Имя: </span>
-                                    {userBase.username}
-                                </p>
-                                <p className="break-words">
-                                    <span className="font-semibold">Email: </span>
-                                    {userBase.email}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">Номер: </span>
-                                    {userBase.telefonNumber || '—'}
-                                </p>
-                                <p>
-                                    <span className="font-semibold">ID: </span>
-                                    {userBase.id}
-                                </p>
+                            <div className="text-left space-y-2 text-base text-gray-800 dark:text-gray-100">
+                                <p><span className="font-semibold">Имя: </span>{userBase.username}</p>
+                                <p className="break-words"><span className="font-semibold">Email: </span>{userBase.email}</p>
+                                <p><span className="font-semibold">Номер: </span>{userBase.telefonNumber || '—'}</p>
+                                <p><span className="font-semibold">ID: </span>{userBase.id}</p>
                             </div>
                         ) : (
                             <p className="text-gray-500 dark:text-gray-400">Загрузка...</p>
                         )}
                     </div>
 
-                    <div className="flex-1 space-y-4">
-                        <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-200">Настройки</h3>
-                        <div className="flex flex-col gap-2">
+                    <div className="flex-1 space-y-5">
+                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Настройки</h3>
+                        <div className="flex flex-col gap-3">
                             {settings.map(({ icon, label, onClick }, idx) => (
                                 <SettingItem key={idx} icon={icon} label={label} onClick={onClick} />
                             ))}
@@ -172,22 +141,22 @@ const Profile = () => {
             </div>
 
             {logoutPopUp && (
-                <div className="fixed inset-0 flex items-center justify-center bg-gray-500 bg-opacity-50 z-50">
-                    <div className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg text-center">
-                        <p className="mb-4 text-gray-800 dark:text-white">Вы действительно хотите выйти?</p>
+                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+                    <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl text-center w-[300px]">
+                        <p className="mb-5 text-gray-800 dark:text-white text-lg font-medium">Вы действительно хотите выйти?</p>
                         <div className="flex justify-center gap-4">
                             <button
                                 onClick={() => {
                                     handleLogout()
                                     setLogoutPopUp(false)
                                 }}
-                                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded cursor-pointer"
+                                className="bg-red-500 hover:bg-red-600 text-white px-5 py-2 rounded-lg shadow-sm transition"
                             >
                                 Выйти
                             </button>
                             <button
                                 onClick={() => setLogoutPopUp(false)}
-                                className="cursor-pointer bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 text-black dark:text-white px-4 py-2 rounded"
+                                className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white px-5 py-2 rounded-lg transition"
                             >
                                 Отмена
                             </button>
@@ -202,11 +171,11 @@ const Profile = () => {
 const SettingItem = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) => (
     <div
         onClick={onClick}
-        className="flex items-center gap-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 rounded-md px-3 py-2 transition"
+        className="flex items-center gap-4 cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-600 rounded-xl px-4 py-3 transition-all shadow-md hover:shadow-xl"
     >
-        <span className="text-blue-600 dark:text-blue-400">{icon}</span>
-        <span className="text-gray-900 dark:text-gray-100">{label}</span>
+        <span className="text-blue-600 dark:text-blue-300">{icon}</span>
+        <span className="text-gray-900 dark:text-white font-medium">{label}</span>
     </div>
 )
 
-export default Profile;
+export default Profile

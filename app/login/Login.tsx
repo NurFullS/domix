@@ -29,46 +29,57 @@ const Login = () => {
     if (!validate()) return
 
     try {
-      const res = await axios.post(`${apiUrl}/users/login`, {
-        email,
-        password,
-      })
+      const res = await axios.post(`${apiUrl}/users/login`, { email, password })
       localStorage.setItem('token', res.data.token)
       router.replace('/main')
-    } catch (err) {
+    } catch {
       setError('Неверный email или пароль')
     }
   }
 
   return (
-    <form
-      onSubmit={logIn}
-      className="max-w-md mx-auto mt-20 p-6 bg-white rounded-lg shadow-md font-sans"
-    >
-      <input
-        type="email"
-        value={email}
-        onChange={e => setEmail(e.target.value)}
-        placeholder="Email"
-        required
-        className="w-full p-3 mb-4 text-lg border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <input
-        type="password"
-        value={password}
-        onChange={e => setPassword(e.target.value)}
-        placeholder="Пароль"
-        required
-        className="w-full p-3 mb-4 text-lg border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        type="submit"
-        className="w-full bg-blue-600 text-white font-semibold py-3 rounded hover:bg-blue-700 transition-colors duration-300"
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 p-4">
+      <form
+        onSubmit={logIn}
+        className="w-full max-w-lg bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-10 transform transition duration-500"
       >
-        Войти
-      </button>
-      {error && <p className="mt-4 text-red-600 font-medium">{error}</p>}
-    </form>
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Вход в аккаунт</h2>
+
+        <input
+          type="email"
+          value={email}
+          onChange={e => setEmail(e.target.value)}
+          placeholder="Email"
+          required
+          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
+        />
+
+        <input
+          type="password"
+          value={password}
+          onChange={e => setPassword(e.target.value)}
+          placeholder="Пароль"
+          required
+          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white text-lg font-semibold py-4 rounded-xl shadow-lg hover:opacity-90 transition duration-300"
+        >
+          Войти
+        </button>
+
+        {error && <p className="mt-6 text-center text-red-600 font-medium">{error}</p>}
+
+        <p className="mt-6 text-center text-gray-600 text-lg">
+          Нет аккаунта?{' '}
+          <a href="/register" className="text-blue-600 hover:underline font-medium">
+            Зарегистрироваться
+          </a>
+        </p>
+      </form>
+    </div>
   )
 }
 

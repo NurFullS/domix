@@ -92,7 +92,7 @@ const Header = ({ onSearchResult }: Props) => {
 
         <div onClick={navProfile} className="flex items-center gap-2 sm:gap-3 cursor-pointer">
           <span className="text-xl text-gray-700 font-medium">
-            {user?.username || 'Гость'}
+            {user?.username || "Профиль"}
           </span>
           <img
             src={user?.avatarUrl || "https://cdn-icons-png.flaticon.com/512/219/219983.png"}

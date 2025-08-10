@@ -27,16 +27,12 @@ const Register = () => {
     }
 
     try {
-      const res = await axios.post(
-        `${apiUrl}/users/register`,
-        {
-          username,
-          email,
-          password,
-        }
-      );
+      const res = await axios.post(`${apiUrl}/users/register`, {
+        username,
+        email,
+        password,
+      });
 
-      console.log('Успешно зарегистрирован', res.data);
       localStorage.setItem('token', res.data.token);
       navigate.replace('/');
     } catch (error: any) {
@@ -52,7 +48,6 @@ const Register = () => {
     }
   };
 
-
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (token) {
@@ -61,43 +56,61 @@ const Register = () => {
   }, []);
 
   return (
-    <div className="flex justify-center items-center min-h-screen bg-gray-100">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 p-4">
       <form
         onSubmit={handleRegister}
-        className="bg-white p-8 rounded-lg shadow-md w-full max-w-md space-y-4"
+        className="w-full max-w-lg bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-10 transform transition duration-500"
       >
-        <h2 className="text-2xl font-bold text-center mb-4">Регистрация</h2>
+        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">
+          Регистрация
+        </h2>
 
         <input
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={username}
           onChange={e => setUsername(e.target.value)}
-          placeholder="Имя пользователя..."
+          placeholder="Имя пользователя"
           required
+          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
         />
+
         <input
           type="email"
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
           required
+          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
         />
+
         <input
           type="password"
-          className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={e => setPassword(e.target.value)}
-          placeholder="Пароль..."
+          placeholder="Пароль"
           required
+          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
         />
+
         <button
           type="submit"
-          className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-700 transition"
+          className="w-full bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white text-lg font-semibold py-4 rounded-xl shadow-lg hover:opacity-90 transition duration-300"
         >
           Зарегистрироваться
         </button>
-        {error && <p className="text-red-500 text-center">{error}</p>}
+
+        {error && (
+          <p className="mt-6 text-center text-red-600 font-medium">{error}</p>
+        )}
+
+        <p className="mt-6 text-center text-gray-600 text-lg">
+          Уже есть аккаунт?{' '}
+          <a
+            href="/login"
+            className="text-blue-600 hover:underline font-medium"
+          >
+            Войти
+          </a>
+        </p>
       </form>
     </div>
   );
