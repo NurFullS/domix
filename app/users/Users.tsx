@@ -61,18 +61,18 @@ const Users = () => {
   }
 
   return (
-    <div className="max-w-xl mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-auto mx-auto mt-10 p-6 bg-white rounded-lg shadow-lg ">
       <h2 className="text-3xl font-bold mb-6 text-center text-gray-900">
         Список пользователей
       </h2>
-      <ul className="space-y-4">
+      <ul className="space-y-4 w-4xl flex gap-3">
         {users.length === 0 && (
           <li className="text-center text-gray-500">Пользователи не найдены</li>
         )}
         {users.map((user) => (
           <li
             key={user.id}
-            className="flex flex-col sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-200 rounded-md hover:shadow-md transition-shadow"
+            className="flex sm:flex-row sm:justify-between sm:items-center p-4 border border-gray-200 rounded-md hover:shadow-md transition-shadow"
           >
             <div>
               <p className="font-semibold text-lg text-gray-800">{user.username}</p>
@@ -83,7 +83,7 @@ const Users = () => {
             </div>
             <button
               onClick={() => deleteUser(user.id)}
-              className="mt-3 sm:mt-0 cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
+              className="mt-5 flex  sm:mt-0 cursor-pointer bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-md transition"
               aria-label={`Удалить пользователя ${user.username}`}
             >
               Удалить

@@ -83,12 +83,11 @@ const Header = ({ onSearchResult }: Props) => {
               style: {
                 backgroundColor: 'white',
                 borderRadius: '12px',
+                border: 'none'
               },
             }}
           />
         </div>
-
-
 
         <div onClick={navProfile} className="flex items-center gap-2 sm:gap-3 cursor-pointer">
           <span className="text-xl text-gray-700 font-medium">

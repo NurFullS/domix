@@ -17,6 +17,14 @@ export default function CreateAd() {
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
 
+  // Недвижимость
+  const [rooms, setRooms] = useState('')
+  const [floor, setFloor] = useState('')
+  const [buildingType, setBuildingType] = useState('')
+  const [landSize, setLandSize] = useState('')
+  const [houseArea, setHouseArea] = useState('')
+
+  // Транспорт
   const [brand, setBrand] = useState('')
   const [model, setModel] = useState('')
   const [year, setYear] = useState('')
@@ -24,8 +32,20 @@ export default function CreateAd() {
   const [fuel, setFuel] = useState('')
   const [transmission, setTransmission] = useState('')
   const [condition, setCondition] = useState('')
+
+  // Одежда
   const [size, setSize] = useState('')
   const [gender, setGender] = useState('')
+  const [material, setMaterial] = useState('')
+
+  // Электроника
+  const [deviceBrand, setDeviceBrand] = useState('')
+  const [deviceModel, setDeviceModel] = useState('')
+  const [warranty, setWarranty] = useState(false)
+
+  // Услуги
+  const [serviceType, setServiceType] = useState('')
+  const [duration, setDuration] = useState('')
 
   const fileInputRef = useRef<HTMLInputElement>(null)
   const router = useRouter()
@@ -74,9 +94,23 @@ export default function CreateAd() {
       } else if (category === 'Одежда') {
         formData.append('size', size)
         formData.append('gender', gender)
+        formData.append('material', material)
+      } else if (category === 'Недвижимость') {
+        formData.append('rooms', rooms)
+        formData.append('floor', floor)
+        formData.append('buildingType', buildingType)
+        formData.append('landSize', landSize)
+        formData.append('houseArea', houseArea)
+      } else if (category === 'Электроника') {
+        formData.append('deviceBrand', deviceBrand)
+        formData.append('deviceModel', deviceModel)
+        formData.append('warranty', warranty.toString())
+      } else if (category === 'Услуги') {
+        formData.append('serviceType', serviceType)
+        formData.append('duration', duration)
       }
 
-      const response = await axios.post(`${apiUrl}/api/ads`, formData)
+      await axios.post(`${apiUrl}/api/ads`, formData)
 
       setMessage('Объявление успешно опубликовано!')
       setError('')
@@ -96,6 +130,17 @@ export default function CreateAd() {
       setCondition('')
       setSize('')
       setGender('')
+      setMaterial('')
+      setRooms('')
+      setFloor('')
+      setBuildingType('')
+      setLandSize('')
+      setHouseArea('')
+      setDeviceBrand('')
+      setDeviceModel('')
+      setWarranty(false)
+      setServiceType('')
+      setDuration('')
     } catch (err) {
       setError('Произошла ошибка при отправке формы.')
     } finally {
@@ -103,28 +148,61 @@ export default function CreateAd() {
     }
   }
 
+  const inputStyle = "w-full p-4 border-2 border-blue-600 rounded-2xl outline-0 focus:ring-2 focus:ring-blue-400 focus:border-blue-500 transition"
+
   const renderCategoryFields = () => {
-    if (category === 'Транспорт') {
-      return (
-        <div className="space-y-4">
-          <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Марка" className="input" />
-          <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className="input" />
-          <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Год выпуска" className="input" />
-          <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="Пробег" className="input" />
-          <input type="text" value={fuel} onChange={(e) => setFuel(e.target.value)} placeholder="Топливо" className="input" />
-          <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} placeholder="Коробка передач" className="input" />
-          <input type="text" value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="Состояние" className="input" />
-        </div>
-      )
-    } else if (category === 'Одежда') {
-      return (
-        <div className="space-y-4">
-          <input type="text" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Размер" className="input" />
-          <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="Пол (мужской, женский)" className="input" />
-        </div>
-      )
+    switch (category) {
+      case 'Транспорт':
+        return (
+          <div className="space-y-4">
+            <input type="text" value={brand} onChange={(e) => setBrand(e.target.value)} placeholder="Марка" className={inputStyle} />
+            <input type="text" value={model} onChange={(e) => setModel(e.target.value)} placeholder="Модель" className={inputStyle} />
+            <input type="number" value={year} onChange={(e) => setYear(e.target.value)} placeholder="Год выпуска" className={inputStyle} />
+            <input type="number" value={mileage} onChange={(e) => setMileage(e.target.value)} placeholder="Пробег" className={inputStyle} />
+            <input type="text" value={fuel} onChange={(e) => setFuel(e.target.value)} placeholder="Топливо" className={inputStyle} />
+            <input type="text" value={transmission} onChange={(e) => setTransmission(e.target.value)} placeholder="Коробка передач" className={inputStyle} />
+            <input type="text" value={condition} onChange={(e) => setCondition(e.target.value)} placeholder="Состояние" className={inputStyle} />
+          </div>
+        )
+      case 'Одежда':
+        return (
+          <div className="space-y-4">
+            <input type="text" value={size} onChange={(e) => setSize(e.target.value)} placeholder="Размер" className={inputStyle} />
+            <input type="text" value={gender} onChange={(e) => setGender(e.target.value)} placeholder="Пол (мужской, женский)" className={inputStyle} />
+            <input type="text" value={material} onChange={(e) => setMaterial(e.target.value)} placeholder="Материал" className={inputStyle} />
+          </div>
+        )
+      case 'Недвижимость':
+        return (
+          <div className="space-y-4">
+            <input type="number" value={rooms} onChange={(e) => setRooms(e.target.value)} placeholder="Количество комнат" className={inputStyle} />
+            <input type="number" value={floor} onChange={(e) => setFloor(e.target.value)} placeholder="Этаж" className={inputStyle} />
+            <input type="text" value={buildingType} onChange={(e) => setBuildingType(e.target.value)} placeholder="Тип здания" className={inputStyle} />
+            <input type="number" value={landSize} onChange={(e) => setLandSize(e.target.value)} placeholder="Площадь участка (м²)" className={inputStyle} />
+            <input type="number" value={houseArea} onChange={(e) => setHouseArea(e.target.value)} placeholder="Площадь дома (м²)" className={inputStyle} />
+          </div>
+        )
+      case 'Электроника':
+        return (
+          <div className="space-y-4">
+            <input type="text" value={deviceBrand} onChange={(e) => setDeviceBrand(e.target.value)} placeholder="Бренд устройства" className={inputStyle} />
+            <input type="text" value={deviceModel} onChange={(e) => setDeviceModel(e.target.value)} placeholder="Модель" className={inputStyle} />
+            <label className="flex items-center gap-2">
+              <input type="checkbox" checked={warranty} onChange={(e) => setWarranty(e.target.checked)} className="w-5 h-5 accent-blue-600" />
+              Гарантия
+            </label>
+          </div>
+        )
+      case 'Услуги':
+        return (
+          <div className="space-y-4">
+            <input type="text" value={serviceType} onChange={(e) => setServiceType(e.target.value)} placeholder="Тип услуги" className={inputStyle} />
+            <input type="text" value={duration} onChange={(e) => setDuration(e.target.value)} placeholder="Длительность/Срок" className={inputStyle} />
+          </div>
+        )
+      default:
+        return null
     }
-    return null
   }
 
   return (
@@ -159,9 +237,9 @@ export default function CreateAd() {
             )}
 
             <div className="space-y-6 w-full">
-              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className="input h-48 w-full resize-none p-4 border-2 border-blue-600 rounded-2xl outline-0" />
-              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Цена" className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0" />
-              <select value={category} onChange={(e) => setCategory(e.target.value)} className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0">
+              <textarea value={description} onChange={(e) => setDescription(e.target.value)} placeholder="Описание" className={`${inputStyle} h-48 resize-none`} />
+              <input type="number" value={price} onChange={(e) => setPrice(e.target.value)} placeholder="Цена" className={inputStyle} />
+              <select value={category} onChange={(e) => setCategory(e.target.value)} className={inputStyle}>
                 <option>Недвижимость</option>
                 <option>Транспорт</option>
                 <option>Электроника</option>
@@ -169,7 +247,7 @@ export default function CreateAd() {
                 <option>Услуги</option>
               </select>
               {renderCategoryFields()}
-              <select value={city} onChange={(e) => setCity(e.target.value)} className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0">
+              <select value={city} onChange={(e) => setCity(e.target.value)} className={inputStyle}>
                 <option>Город</option>
                 <option>Чуй</option>
                 <option>Талас</option>
@@ -180,7 +258,7 @@ export default function CreateAd() {
                 <option>Нарын</option>
                 <option>Бишкек</option>
               </select>
-              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Контактный номер" className="input w-full p-4 border-2 text-blue-900 border-blue-600 rounded-2xl outline-0" />
+              <input type="text" value={phone} onChange={(e) => setPhone(e.target.value)} placeholder="Контактный номер" className={inputStyle} />
             </div>
 
             {message && <div className="mt-6 p-4 rounded-lg bg-green-100 text-green-800 font-semibold">{message}</div>}

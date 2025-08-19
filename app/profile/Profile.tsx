@@ -86,18 +86,18 @@ const Profile = () => {
     return (
         <>
             <TopHeader />
-            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white dark:from-gray-900 dark:to-gray-800 px-4 py-8 flex justify-center">
-                <div className="bg-white dark:bg-gray-800 shadow-2xl rounded-3xl p-8 w-full h-[530px] max-w-5xl flex flex-col md:flex-row gap-8 animate-fade-in">
+            <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white px-4 py-8 flex justify-center">
+                <div className="bg-white shadow-2xl rounded-3xl p-8 w-full h-[530px] max-w-5xl flex flex-col md:flex-row gap-8 animate-fade-in">
                     <div className="flex flex-col items-center md:items-start md:w-1/2 space-y-5">
                         <img
                             className="w-32 h-32 rounded-full border-4 border-blue-600 object-cover shadow-lg"
                             src={userBase?.avatarUrl || 'https://cdn-icons-png.flaticon.com/512/219/219983.png'}
                             alt="User avatar"
                         />
-                        <div className="w-full max-w-md flex flex-col gap-3">
+                        <div className="w-full max-w-md flex flex-col gap-3 text-gray-600">
                             <label
                                 htmlFor="avatarUpload"
-                                className="block text-gray-800 dark:text-gray-200 font-semibold cursor-pointer"
+                                className="block text-blue-600 font-semibold cursor-pointer"
                             >
                                 Фото профиля:
                             </label>
@@ -105,7 +105,7 @@ const Profile = () => {
                                 id="avatarUpload"
                                 type="file"
                                 accept="image/*"
-                                className="block w-full text-sm text-gray-700 dark:text-gray-100
+                                className="block w-full text-sm text-gray-700
                   file:mr-4 file:py-2 file:px-4
                   file:rounded-lg file:border-0
                   file:text-sm file:font-medium
@@ -118,7 +118,7 @@ const Profile = () => {
                         </div>
 
                         {userBase ? (
-                            <div className="text-left space-y-2 text-base text-gray-800 dark:text-gray-100">
+                            <div className="text-left space-y-2 text-base text-blue-600">
                                 <p><span className="font-semibold">Имя: </span>{userBase.username}</p>
                                 <p className="break-words"><span className="font-semibold">Email: </span>{userBase.email}</p>
                                 <p><span className="font-semibold">Номер: </span>{userBase.telefonNumber || '—'}</p>
@@ -130,8 +130,8 @@ const Profile = () => {
                     </div>
 
                     <div className="flex-1 space-y-5">
-                        <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-2">Настройки</h3>
-                        <div className="flex flex-col gap-3">
+                        <h3 className="text-2xl font-bold text-blue-600 mb-2">Настройки</h3>
+                        <div className="flex flex-col gap-3 bg-gradient-to-b">
                             {settings.map(({ icon, label, onClick }, idx) => (
                                 <SettingItem key={idx} icon={icon} label={label} onClick={onClick} />
                             ))}
@@ -141,8 +141,8 @@ const Profile = () => {
             </div>
 
             {logoutPopUp && (
-                <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
-                    <div className="bg-white dark:bg-gray-800 p-8 rounded-xl shadow-2xl text-center w-[300px]">
+                <div className="fixed inset-0 flex items-center justify-center bg-gradient-to-b bg-opacity-50 z-50">
+                    <div className="bg-gradient-to-b p-8 rounded-xl shadow-2xl text-center w-[300px]">
                         <p className="mb-5 text-gray-800 dark:text-white text-lg font-medium">Вы действительно хотите выйти?</p>
                         <div className="flex justify-center gap-4">
                             <button
@@ -171,10 +171,10 @@ const Profile = () => {
 const SettingItem = ({ icon, label, onClick }: { icon: React.ReactNode; label: string; onClick: () => void }) => (
     <div
         onClick={onClick}
-        className="flex items-center gap-4 cursor-pointer bg-gray-100 dark:bg-gray-700 hover:bg-blue-100 dark:hover:bg-blue-600 rounded-xl px-4 py-3 transition-all shadow-md hover:shadow-xl"
+        className="flex items-center gap-4 cursor-pointer bg-gradient-to-b hover:bg-blue-100 rounded-xl px-4 py-3 transition-all shadow-md hover:shadow-xl"
     >
         <span className="text-blue-600 dark:text-blue-300">{icon}</span>
-        <span className="text-gray-900 dark:text-white font-medium">{label}</span>
+        <span className="text-gray-900 dark:text-blue-600 font-medium">{label}</span>
     </div>
 )
 

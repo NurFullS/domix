@@ -105,7 +105,7 @@ const AnnouncementPage = () => {
     return (
         <>
             <TopHeader />
-            <div className="max-w-3xl mx-auto p-6 bg-white rounded-xl shadow-lg mt-10 mb-10">
+            <div className="w-full p-6 bg-[#f4f0e6] min-h-screen">
                 <h1 className="text-3xl font-bold mb-6 border-b pb-2">{ad.category || 'Без названия'}</h1>
 
                 <div className="mb-6 flex flex-wrap gap-4 justify-center">
@@ -114,7 +114,7 @@ const AnnouncementPage = () => {
                             key={i}
                             src={url}
                             alt={`${ad.title} - изображение ${i + 1}`}
-                            className="rounded-lg max-w-[279px] max-h-[181px] object-contain border"
+                            className="rounded-lg max-w-full max-h-[300px] object-contain border"
                         />
                     ))}
                 </div>

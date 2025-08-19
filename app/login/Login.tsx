@@ -3,6 +3,7 @@
 import axios from 'axios'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { Input, Button } from '@mui/material'
 
 const Login = () => {
   const [email, setEmail] = useState('')
@@ -38,43 +39,68 @@ const Login = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 via-indigo-500 to-purple-600 p-4">
+    <div className="min-h-screen flex items-center justify-center bg-[#e0d6c3] p-6">
       <form
         onSubmit={logIn}
-        className="w-full max-w-lg bg-white/90 backdrop-blur-md rounded-2xl shadow-2xl p-10 transform transition duration-500"
+        className="w-full max-w-lg p-10 rounded-2xl bg-[#cbbf9f]/90 backdrop-blur-md shadow-md flex flex-col gap-6"
       >
-        <h2 className="text-3xl font-bold text-center mb-8 text-gray-800">Вход в аккаунт</h2>
+        <h2 className="text-3xl font-bold text-[#4b3f33] text-center mb-6">
+          Вход в аккаунт
+        </h2>
 
-        <input
+        <Input
           type="email"
           value={email}
           onChange={e => setEmail(e.target.value)}
           placeholder="Email"
-          required
-          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
+          sx={{
+            width: '100%',
+            padding: '16px',
+            borderRadius: '12px',
+            fontSize: '1rem',
+            backgroundColor: '#d6c7a1',
+            color: '#4b3f33',
+            '&:focus': { boxShadow: '0 0 0 3px rgba(184, 143, 92, 0.4)' }
+          }}
         />
 
-        <input
+        <Input
           type="password"
           value={password}
           onChange={e => setPassword(e.target.value)}
           placeholder="Пароль"
-          required
-          className="w-full p-4 mb-6 text-lg border border-gray-300 rounded-xl focus:outline-none focus:ring-4 focus:ring-blue-400 transition"
+          sx={{
+            width: '100%',
+            padding: '16px',
+            borderRadius: '12px',
+            fontSize: '1rem',
+            backgroundColor: '#d6c7a1',
+            color: '#4b3f33',
+            '&:focus': { boxShadow: '0 0 0 3px rgba(184, 143, 92, 0.4)' }
+          }}
         />
 
-        <button
+        <Button
           type="submit"
-          className="w-full bg-gradient-to-r cursor-pointer from-blue-600 to-purple-600 text-white text-lg font-semibold py-4 rounded-xl shadow-lg hover:opacity-90 transition duration-300"
+          variant="contained"
+          sx={{
+            width: '100%',
+            padding: '16px',
+            borderRadius: '12px',
+            fontSize: '1.1rem',
+            backgroundColor: '#b99f75',
+            color: '#fff6e5',
+            '&:hover': { backgroundColor: '#a88e64' },
+          }}
         >
           Войти
-        </button>
+        </Button>
 
-        {error && <p className="mt-6 text-center text-red-600 font-medium">{error}</p>}
+        {error && <p className="text-center text-red-600">{error}</p>}
 
-        <p className="mt-6 text-center text-gray-600 text-lg">
+        <p className="text-center text-[#4b3f33] text-sm">
           Нет аккаунта?{' '}
-          <a href="/register" className="text-blue-600 hover:underline font-medium">
+          <a href="/register" className="underline font-medium">
             Зарегистрироваться
           </a>
         </p>
